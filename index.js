@@ -24,8 +24,8 @@ const server = http.createServer((req,res)=>{
 
       fs.readFile(`${__dirname}/templates/template-card.html`,'utf-8',(err,data)=>{
         const cardsOutput= laptopData.map (el=>replaceTemplate(data,el)).join('');
-        overviewOutput.replace('{%CARDS%}',cardsOutput);
-
+        overviewOutput = overviewOutput.replace('{%CARDS%}',cardsOutput);
+      
         res.end(overviewOutput)
       });
     });
@@ -36,6 +36,8 @@ const server = http.createServer((req,res)=>{
     res.writeHead(200,{'Content-type': 'text/html'});
     fs.readFile(`${__dirname}/templates/template-laptop.html`,'utf-8',(err,data)=>{
       const laptop = laptopData[id];
+
+      const output =replaceTemplate(data,laptop);
 
       res.end(output);
     })
