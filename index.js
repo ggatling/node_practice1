@@ -18,9 +18,16 @@ const server = http.createServer((req,res)=>{
   if (pathName === '/products' || pathName === '/'){
     res.writeHead(200,{'Content-type': 'text/html'});
 
-    fs.readFile(`${__dirname}/templates/template-overview`,'utf-8',(err,data)=>{
+    fs.readFile(`${__dirname}/templates/template-overview.html`,'utf-8',(err,data)=>{
 
-    res.end(data)
+      let overviewOutput = data;
+
+      fs.readFile(`${__dirname}/templates/template-card.html`,'utf-8',(err,data)=>{
+        const cardsOutput= laptopData.map (el=>replaceTemplate(data,el)).join('');
+        overviewOutput.replace('{%CARDS%}',cardsOutput);
+
+        res.end(overviewOutput)
+      });
     });
   }
 
@@ -29,14 +36,6 @@ const server = http.createServer((req,res)=>{
     res.writeHead(200,{'Content-type': 'text/html'});
     fs.readFile(`${__dirname}/templates/template-laptop.html`,'utf-8',(err,data)=>{
       const laptop = laptopData[id];
-      let output = data.replace(/{%PRODUCTNAME%}/g,laptop.productname)
-       output = output.replace(/{%IMAGE%}/g,laptop.image)
-       output = output.replace(/{%PRICE%}/g,laptop.price)
-       output = output.replace(/{%SCREEN%}/g,laptop.screen)
-       output = output.replace(/{%CPU%}/g,laptop.cpu)
-       output = output.replace(/{%RAM%}/g,laptop.ram)
-       output = output.replace(/{%STORAGE%}/g,laptop.storage)
-       output = output.replace(/{%DESCRIPTION%}/g,laptop.description)
 
       res.end(output);
     })
@@ -54,3 +53,17 @@ const server = http.createServer((req,res)=>{
 server.listen(1337,'127.0.0.1',()=>{
   console.log('listening for a request')
 });
+
+function replaceTemplate(originalHtml,laptop){
+  let output = originalHtml.replace(/{%PRODUCTNAME%}/g,laptop.productname)
+   output = output.replace(/{%IMAGE%}/g,laptop.image)
+   output = output.replace(/{%PRICE%}/g,laptop.price)
+   output = output.replace(/{%SCREEN%}/g,laptop.screen)
+   output = output.replace(/{%CPU%}/g,laptop.cpu)
+   output = output.replace(/{%RAM%}/g,laptop.ram)
+   output = output.replace(/{%STORAGE%}/g,laptop.storage)
+   output = output.replace(/{%DESCRIPTION%}/g,laptop.description)
+   output = output.replace(/{%ID%}/g,laptop.id)
+
+   return output;
+}
